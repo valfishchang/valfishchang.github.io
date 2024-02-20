@@ -1,16 +1,22 @@
-let capture;
-
 function setup() {
-  createCanvas(windowWidth, windowHeight);
-
-  // Create a p5.MediaElement using createCapture().
-  capture = createCapture(VIDEO);
-  capture.hide();
+  createARCanvas();
 }
 
+let rot = 0;
+let rotSpeed = 0.1;
+
 function draw() {
-  // Display the video stream and invert the colors.
-  //image(capture, 0, 0, width, width * capture.height / capture.width);
-  image(capture, (width - capture.width) /2, 0, capture.width , capture.height);
-  //filter(INVERT);
+  rot += rotSpeed;
+  rotateY(rot);
+  fill(100, 240, 100);
+
+  box(20);
+
+  translate(-20, 0, 0);
+  fill(240, 100, 100);
+  box(20);
+
+  translate(40, 0, 0);
+  fill(100, 100, 240);
+  box(20);
 }
