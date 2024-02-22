@@ -59,12 +59,13 @@ The number of lines in a paragraph depends on the size of the browser window. If
 			
 		<!-- DEFINE ASSETS -->
 		<a-assets>
-			<!-- <a-asset-item id="animated-asset" src="https://raw.githubusercontent.com/nicolocarpignoli/nicolocarpignoli.github.io/master/ar-playground/models/CesiumMan.gltf"></a-asset-item> -->
-      <img id="text_box" src="Text_Box.jpg">
+			<a-asset-item id="animated-asset" src="https://raw.githubusercontent.com/nicolocarpignoli/nicolocarpignoli.github.io/master/ar-playground/models/CesiumMan.gltf"></a-asset-item>
+      <!-- <img id="text_box" src="Text_Box.jpg"> -->
 		</a-assets>
 			
 		<!-- DEFINE MARKERS -->
 		<a-marker id="animated-marker" type="barcode" value="6">
+      <a-image src="Text_Box.jpg"></a-image>
 			<a-entity
 				  gltf-model="#animated-asset"
 				  scale="2"
