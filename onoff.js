@@ -1,6 +1,6 @@
-AFRAME.registerComponent('hello-onoff', {
+AFRAME.registerComponent('onoff', {
     init: function () {
-        num = 5;
+        let num = 5;
         console.log(num);
     }
   });
