@@ -18,14 +18,18 @@
 <!DOCTYPE HTML>
 <html>
 	<head>
-		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+		<meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+    <!-- A-Frame + Ar.js --> 
+    <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
+    <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js"></script>
+    <script src="https://unpkg.com/aframe-event-set-component@5/dist/aframe-event-set-component.min.js"></script>
+    <script src="https://unpkg.com/aframe-layout-component@5.3.0/dist/aframe-layout-component.min.js"></script>
+    <script src="https://unpkg.com/aframe-template-component@3.2.1/dist/aframe-template-component.min.js"></script>
+    <script src="https://unpkg.com/aframe-proxy-event-component@2.1.0/dist/aframe-proxy-event-component.min.js"></script>
+    <script src="onoff.js"></script>
 	</head>
-	
-	<!-- Load AFRAME + AR.js (marker tracking) -->
-	<script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
-	<script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js"></script>
-	<script src="onoff.js"></script>
-  
+
 	<body style="margin : 0px; overflow: hidden;">
     
     <!-- <script> 
@@ -37,21 +41,25 @@
     </script> -->
 
 		<!-- Use AR.js in AFRAME with MatrixCodeType markers -->
-		<a-scene vr-mode-ui="enabled: false" embedded arjs="sourceType: webcam; debugUIEnabled: false; detectionMode: mono_and_matrix; matrixCodeType: 3x3;">
-		<!-- DEFINE ASSETS -->  
-    <a-assets>
-      <img id="text_box" src="Text_Box.jpg">
-		</a-assets>
-			
-		<!-- DEFINE MARKERS -->
-		<a-marker id="animated-marker" type="barcode" value="6">
-      <a-image src="#text_box" width="5.3" height="3" rotation="-90 0 0" opacity="1"></a-image>
-      <a-text value="Hello, World!" height="4" width="8" color="black" rotation="-90 0 0" position="-1 0.5 0"></a-text>
-      <a-entity onoff></a-entity>
-		</a-marker>
-			
-		<!-- USING STATIC CAMERA -->
-		<a-entity camera></a-entity>
+		<a-scene xr-mode-ui="enabled: false" embedded arjs="sourceType: webcam; debugUIEnabled: false; detectionMode: mono_and_matrix; matrixCodeType: 3x3;">
+      <a-assets>
+        <img id="text_box" src="Text_Box.jpg">
+        <img id="link_button" src="Button.jpg">
+      </a-assets>
+        
+      <!-- Define markers -->
+      <a-marker id="animated-marker" type="barcode" value="6" smooth-tolerance="0.25" smooth-threshold="0.18" smooth="true">
+        <a-image src="#text_box" width="5.3" height="3" rotation="-90 0 0" opacity="1">
+          <a-text value="Hello, World!" height="4" width="8" color="black" position="-1 0 1"></a-text>
+        </a-image> 
+        <!-- <a-link href="https://poly.pizza/m/66d-mKAgF17" title="Next Page" titleColor="black"></a-link> -->
+        <!-- <a-image src="#link_button" width="2" height="0.8" rotation="-90 0 0" position="-3 0.5 5" opacity="1"></a-image>-->
+        <!-- <a-entity onoff></a-entity> -->
+      </a-marker>
+        
+      <!-- Camera & Cursor -->
+      <a-entity camera>
+      </a-entity>
 		</a-scene>
 
 	</body>
