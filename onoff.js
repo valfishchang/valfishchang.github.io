@@ -1,10 +1,14 @@
 AFRAME.registerComponent('onoff', {
-    init: function () {
-        var url = 'https://poly.pizza/m/66d-mKAgF17';
-        
-        this.el.addEventListener('click', function () {
-          window.location.href = url;
-        });
-        console.log("init complete");
-    }
-  });
+  schema: {
+    url: {default: 'http://google.com'}
+  },
+
+  init: function () {
+    var data = this.data;
+    var el = this.el;
+
+    el.addEventListener('click', function () {
+      window.location.href = data.url;
+    });
+  }
+});

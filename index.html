@@ -28,6 +28,18 @@
     <script src="https://unpkg.com/aframe-template-component@3.2.1/dist/aframe-template-component.min.js"></script>
     <script src="https://unpkg.com/aframe-proxy-event-component@2.1.0/dist/aframe-proxy-event-component.min.js"></script>
     <script src="onoff.js"></script>
+
+    <!-- Button link template to be reused. -->
+    <script id="link" type="text/html">
+      <a-entity class="link"
+        geometry="primitive: plane; height: 1; width: 2"
+        material="shader: flat; src: ${thumb}"
+        event-set__mouseenter="scale: 1.2 1.2 1"
+        event-set__mouseleave="scale: 1 1 1"
+        event-set__click="_target: #page; _delay: 300"
+        proxy-event="event: click; to: #page"
+        sound="on: click; src: #click-sound"></a-entity>
+    </script>  
 	</head>
 
 	<body style="margin : 0px; overflow: hidden;">
@@ -45,20 +57,34 @@
       <a-assets>
         <img id="text_box" src="Text_Box.jpg">
         <img id="link_button" src="Button.jpg">
+        <audio id="click-sound" crossorigin="anonymous" src="https://cdn.aframe.io/360-image-gallery-boilerplate/audio/click.ogg"></audio>
       </a-assets>
         
       <!-- Define markers -->
-      <a-marker id="animated-marker" type="barcode" value="6" smooth-tolerance="0.25" smooth-threshold="0.18" smooth="true">
+      <a-marker id="animated-marker" type="barcode" value="6" smooth-tolerance="0.15" smooth="true">
+        <!-- Text Box and Content -->
         <a-image src="#text_box" width="5.3" height="3" rotation="-90 0 0" opacity="1">
           <a-text value="Hello, World!" height="4" width="8" color="black" position="-1 0 1"></a-text>
         </a-image> 
-        <!-- <a-link href="https://poly.pizza/m/66d-mKAgF17" title="Next Page" titleColor="black"></a-link> -->
-        <!-- <a-image src="#link_button" width="2" height="0.8" rotation="-90 0 0" position="-3 0.5 5" opacity="1"></a-image>-->
-        <!-- <a-entity onoff></a-entity> -->
+        <!-- Target Link Pages -->
+        <a-entity id="page" link="on: click; href: https://poly.pizza/m/66d-mKAgF17"></a-entity>
+
+        <!-- Button links -->
+        <a-entity id="links" layout="type: line; margin: 1.5" rotation="-90 0 0" position="-1 0.5 5">
+          <a-entity template="src: #link" data-thumb="#link_button"></a-entity>
+        </a-entity>
       </a-marker>
-        
+
+    
       <!-- Camera & Cursor -->
       <a-entity camera>
+        <a-cursor
+          id="cursor"
+          animation__click="property: scale; startEvents: click; from: 0.1 0.1 0.1; to: 1 1 1; dur: 150"
+          animation__fusing="property: fusing; startEvents: fusing; from: 1 1 1; to: 0.1 0.1 0.1; dur: 1500"
+          event-set__mouseenter="_event: mouseenter; color: springgreen"
+          event-set__mouseleave="_event: mouseleave; color: black"
+          raycaster="objects: .link"></a-cursor>
       </a-entity>
 		</a-scene>
 
