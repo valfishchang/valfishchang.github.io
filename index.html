@@ -36,13 +36,13 @@
         material="shader: flat; src: ${thumb}"
         event-set__mouseenter="scale: 1.2 1.2 1"
         event-set__mouseleave="scale: 1 1 1"
-        event-set__click="_target: #page; _delay: 300"
-        proxy-event="event: click; to: #page"
+        event-set__click="_target: #onoff; _delay: 300"
+        proxy-event="event: click; to: #onoff"
         sound="on: click; src: #click-sound"></a-entity>
     </script>  
 	</head>
 
-	<body style="margin : 0px; overflow: hidden;">
+	<body style="margin: 0px; overflow: hidden;">
     
     <!-- <script> 
     AFRAME.registerComponent('onoff', {
@@ -61,20 +61,21 @@
       </a-assets>
         
       <!-- Define markers -->
-      <a-marker id="animated-marker" type="barcode" value="6" smooth-tolerance="0.15" smooth="true">
+      <a-marker id="animated-marker" type="barcode" value="6" emitevents="true" smooth="true" smooth-count="10" smooth-tolerance="0.5" smooth-threshold="2">
         <!-- Text Box and Content -->
-        <a-image src="#text_box" width="5.3" height="3" rotation="-90 0 0" opacity="1">
-          <a-text value="Hello, World!" height="4" width="8" color="black" position="-1 0 1"></a-text>
+        <a-image src="#text_box" width="5.3" height="3" rotation="-90 0 0" opacity="0.8">
+          <a-text value="Hello, World!" height="4" width="8" color="black" position="-1 0 0.8"></a-text>
         </a-image> 
+        <!-- <a href="http://www.codecademy.com">Visit this site</a> -->
         <!-- Target Link Pages -->
         <a-entity id="page" link="on: click; href: https://poly.pizza/m/66d-mKAgF17"></a-entity>
+        <!-- <a-box id="" onoff="on: click; url: 'https://poly.pizza/m/66d-mKAgF17'" position="0 1 5"></a-box> -->
 
         <!-- Button links -->
         <a-entity id="links" layout="type: line; margin: 1.5" rotation="-90 0 0" position="-1 0.5 5">
           <a-entity template="src: #link" data-thumb="#link_button"></a-entity>
         </a-entity>
       </a-marker>
-
     
       <!-- Camera & Cursor -->
       <a-entity camera>

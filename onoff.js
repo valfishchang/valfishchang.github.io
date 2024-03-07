@@ -1,6 +1,6 @@
 AFRAME.registerComponent('onoff', {
   schema: {
-    url: {default: 'http://google.com'}
+    url: {default: ''}
   },
 
   init: function () {
