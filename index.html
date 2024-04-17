@@ -36,8 +36,8 @@
         material="shader: flat; src: ${thumb}"
         event-set__mouseenter="scale: 1.2 1.2 1"
         event-set__mouseleave="scale: 1 1 1"
-        event-set__click="_target: #page; _delay: 300; material.src: ${src}"
-        proxy-event="event: click; to: #page"
+        event-set__click="_target: #page; _delay: 300"
+        proxy-event="event: click; to: #page; as: fade"
         sound="on: click; src: #click-sound"></a-entity>
     </script>  
 
