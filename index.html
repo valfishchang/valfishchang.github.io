@@ -38,16 +38,34 @@
         init: function () {
           var marker = this.el;
           var sceneEl = document.querySelector('a-scene');
-          var entityEl = sceneEl.querySelector('#details');
-          var logT = document.createElement('a-text');
-          sceneEl.appendChild(logT);
+          //var entityEl = sceneEl.querySelector('#details');
           console.log('Make this work plz!');
           
           marker.addEventListener('markerFound', function() {
             var markerId = marker.id;
             console.log('markerFound', markerId);
-            //entityEl.setAttribute('color','blue');
-            //entityEl.object3D.visible = false;
+
+            var tBox = document.createElement('a-image');
+            sceneEl.appendChild(tBox);
+            tBox.id = 'TestImage';
+            tBox.setAttribute('src', '#text_box');
+            tBox.setAttribute('width', 5.3);
+            tBox.setAttribute('height', 3);
+            var tBoxObject3D = document.querySelector('#TestImage').object3D;
+            //tBoxObject3D.rotation.set(-90, 0, -5);
+            tBoxObject3D.position.set(0, 0, -7);
+            //console.log(tBoxObject3D);
+
+
+            var displayT = document.createElement('a-text');
+            tBox.appendChild(displayT);
+            displayT.id = "DisplayText";
+            displayT.setAttribute('value','TEST');
+            displayT.setAttribute('color','blue');
+            var disTObject3D = document.querySelector('#DisplayText').object3D;
+            disTObject3D.position.set(0, 0, -2);
+            console.log(disTObject3D);
+
                                      
           });
 
@@ -96,9 +114,9 @@
       emitevents="true" smooth="true" smooth-count="10" smooth-tolerance="0.5" smooth-threshold="2" registerevents>
 
         
-        <a-image src="#text_box" width="5.3" height="3" rotation="-90 0 0" opacity="1" >
+        <!-- <a-image src="#text_box" width="5.3" height="3" rotation="-90 0 0" opacity="1" >
           <a-text id="details" value="AMP172-001" height="4" width="8" color="red" position="-1 0 0.8"></a-text>
-        </a-image> 
+        </a-image>  -->
         
       </a-marker>
 
@@ -122,7 +140,7 @@
         
       </a-marker>  
 
-      <a-marker id="marker5" type="pattern" url="https://raw.githack.com/valfishchang/valfishchang.github.io/main/src/marker/pattern-VMON121-001patt"
+      <a-marker id="marker5" type="pattern" url="https://raw.githack.com/valfishchang/valfishchang.github.io/main/src/marker/pattern-VMON121-001.patt"
       emitevents="true" smooth="true" smooth-count="10" smooth-tolerance="0.5" smooth-threshold="2" registerevents>
 
         
