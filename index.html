@@ -39,34 +39,71 @@
           var marker = this.el;
           var sceneEl = document.querySelector('a-scene');
           //var entityEl = sceneEl.querySelector('#details');
-          console.log('Make this work plz!');
+          var Boxes = [];
+          // var BoxInst = {
+          //   id: 0,
+          //   created: false
+          // }
           
           marker.addEventListener('markerFound', function() {
             var markerId = marker.id;
             console.log('markerFound', markerId);
 
-            var tBox = document.createElement('a-image');
-            sceneEl.appendChild(tBox);
-            tBox.id = 'TestImage';
-            tBox.setAttribute('src', '#text_box');
-            tBox.setAttribute('width', 5.3);
-            tBox.setAttribute('height', 3);
-            var tBoxObject3D = document.querySelector('#TestImage').object3D;
-            //tBoxObject3D.rotation.set(-90, 0, -5);
-            tBoxObject3D.position.set(0, 0, -7);
-            //console.log(tBoxObject3D);
+            // Validate Box instances
+            if (!Boxes.includes(markerId)) {
+
+              // Get Marker World Position
+              var markerWPos, markerLPos, tBoxPos;
+              var marker3D = marker.object3D;
+              
+              markerWPos = new THREE.Vector3();
+              marker3D.getWorldPosition(markerWPos);
+              // markerLPos = marker3D.worldToLocal(markerWPos); 
+              // tBoxPos = markerWPos.sub(0, 0, 7); // marker local pos
+              // tBoxPos = markerWPos.add(0, 0, 5); // text box local pos
+              // console.log("Marker W Pos " + markerWPos);
+              markerWPos.round();
+              console.log("Marker W Pos X " + markerWPos.x);
+              console.log("Marker W Pos Y " + markerWPos.y);
+              console.log("Marker W Pos Z " + markerWPos.z);
+              // markerLPos.ceil();
+              // console.log("Marker L Pos X " + markerLPos.x);
+              // console.log("Marker L Pos Y " + markerLPos.y);
+              // console.log("Marker L Pos Z " + markerLPos.z);
+              // console.log("Text Display Pos " + tBoxPos);
 
 
-            var displayT = document.createElement('a-text');
-            tBox.appendChild(displayT);
-            displayT.id = "DisplayText";
-            displayT.setAttribute('value','TEST');
-            displayT.setAttribute('color','blue');
-            var disTObject3D = document.querySelector('#DisplayText').object3D;
-            disTObject3D.position.set(0, 0, -2);
-            console.log(disTObject3D);
+              // Create and display text box + text
+              var tBox = document.createElement('a-image');
+              sceneEl.appendChild(tBox);
+              tBox.id = 'TestImage';
+              tBox.setAttribute('src', '#text_box');
+              tBox.setAttribute('width', 5.3);
+              tBox.setAttribute('height', 3);
+              var tBoxObject3D = document.querySelector('#TestImage').object3D;
+              // tBoxObject3D.position.set(0, 0, -7);
+              tBoxObject3D.position.set(markerWPos.x, markerWPos.y, markerWPos.z);
+              console.log(tBoxObject3D);
 
-                                     
+              var displayT = document.createElement('a-text');
+              tBox.appendChild(displayT);
+              displayT.id = "DisplayText";
+              displayT.setAttribute('value','TEST');
+              displayT.setAttribute('color','blue');
+              var tDispObject3D = document.querySelector('#DisplayText').object3D;
+              tDispObject3D.position.set(0, 0, 2);
+              // console.log(tDispObject3D);
+              
+              // Add marker ID to Box instances
+              Boxes.push(markerId);
+
+            } else {
+              console.log("instance not created");
+            }
+
+
+
+                          
           });
 
           marker.addEventListener('markerLost', function() {
@@ -75,6 +112,23 @@
             
           });
         }
+        // ,
+        // tick: function () {
+        //   this.markerPosition();
+        // }, 
+        // markerPosition: function () {
+        //   var markerPos;
+        //   var marker1 = document.querySelector('#markerId').object3D;
+          
+        //   markerPos = new THREE.Vector3();
+        //   marker1.getWorldPosition(markerPos);
+
+        //   this.tBoxPos = markerPos.add(3, 0, 0);
+        //   console.log("Marker Pos" + markerPos);
+        //   console.log("Text Display Pos" + this.tBoxPos);
+
+        // }
+ 
       });
     </script>
 
