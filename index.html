@@ -26,6 +26,9 @@
 
     <!-- Register an aframe component that allows reacting to marker events -->
     <script>
+      let markerWPos = 0, cameraWPos = 0;
+      let camera3D;
+
       window.addEventListener('camera-init', (data) => {
           console.log('camera-init', data);
       })
@@ -36,14 +39,10 @@
 
       AFRAME.registerComponent('registerevents', {
         init: function () {
+          const sceneEl = document.querySelector('a-scene');
+          camera3D = document.querySelector('#camera').object3D;
           var marker = this.el;
-          var sceneEl = document.querySelector('a-scene');
-          //var entityEl = sceneEl.querySelector('#details');
           var Boxes = [];
-          // var BoxInst = {
-          //   id: 0,
-          //   created: false
-          // }
           
           marker.addEventListener('markerFound', function() {
             var markerId = marker.id;
@@ -52,26 +51,15 @@
             // Validate Box instances
             if (!Boxes.includes(markerId)) {
 
-              // Get Marker World Position
-              var markerWPos, markerLPos, tBoxPos;
+              // Get Marker World Position through marker3D
+              var tBoxPos;
               var marker3D = marker.object3D;
-              
               markerWPos = new THREE.Vector3();
               marker3D.getWorldPosition(markerWPos);
-              // markerLPos = marker3D.worldToLocal(markerWPos); 
-              // tBoxPos = markerWPos.sub(0, 0, 7); // marker local pos
-              // tBoxPos = markerWPos.add(0, 0, 5); // text box local pos
-              // console.log("Marker W Pos " + markerWPos);
               markerWPos.round();
               console.log("Marker W Pos X " + markerWPos.x);
               console.log("Marker W Pos Y " + markerWPos.y);
               console.log("Marker W Pos Z " + markerWPos.z);
-              // markerLPos.ceil();
-              // console.log("Marker L Pos X " + markerLPos.x);
-              // console.log("Marker L Pos Y " + markerLPos.y);
-              // console.log("Marker L Pos Z " + markerLPos.z);
-              // console.log("Text Display Pos " + tBoxPos);
-
 
               // Create and display text box + text
               var tBox = document.createElement('a-image');
@@ -81,27 +69,46 @@
               tBox.setAttribute('width', 5.3);
               tBox.setAttribute('height', 3);
               var tBoxObject3D = document.querySelector('#TestImage').object3D;
-              // tBoxObject3D.position.set(0, 0, -7);
               tBoxObject3D.position.set(markerWPos.x, markerWPos.y, markerWPos.z);
               console.log(tBoxObject3D);
 
               var displayT = document.createElement('a-text');
               tBox.appendChild(displayT);
               displayT.id = "DisplayText";
-              displayT.setAttribute('value','TEST');
+              displayT.setAttribute('value', markerWPos.x);
               displayT.setAttribute('color','blue');
               var tDispObject3D = document.querySelector('#DisplayText').object3D;
-              tDispObject3D.position.set(0, 0, 2);
+              tDispObject3D.position.set(-0.5, 0.5, 2);
               // console.log(tDispObject3D);
+
+              // Read current cam position
+              // cameraWPos = new THREE.Vector3();
+              // camera3D.getWorldPosition(cameraWPos);
+              // cameraWPos.round();
               
               // Add marker ID to Box instances
               Boxes.push(markerId);
 
             } else {
-              console.log("instance not created");
+              console.log("instance not duplicated");
+              // Get camera-marker position differences
+              // var newCameraWPos = new THREE.Vector3();
+              // camera3D.getWorldPosition(newCameraWPos);
+              // newCameraWPos.round();
+              // console.log("Cam-Marker Dist " + cameraWPos.distanceTo(markerWPos));
+              // console.log("New Cam-Marker Dist " + newCameraWPos.distanceTo(markerWPos));
+              // if (cameraWPos.distanceTo(markerWPos) != newCameraWPos.distanceTo(markerWPos)) {
+              //   console.log("Cam-Marker Dist " + cameraWPos.distanceTo(markerWPos));
+              //   console.log("New Cam-Marker Dist " + newCameraWPos.distanceTo(markerWPos));
+              //   // console.log("Cam-Marker X Diff " + (newCameraWPos.x - markerWPos.x));
+              //   // console.log("Cam-Marker Y Diff " + (newCameraWPos.y - markerWPos.y));
+              //   // console.log("Cam-Marker Z Diff " + (newCameraWPos.z - markerWPos.z));
+
+              // }
+
+
+
             }
-
-
 
                           
           });
@@ -111,25 +118,36 @@
             console.log('markerLost', markerId);
             
           });
-        }
-        // ,
-        // tick: function () {
-        //   this.markerPosition();
-        // }, 
-        // markerPosition: function () {
-        //   var markerPos;
-        //   var marker1 = document.querySelector('#markerId').object3D;
-          
-        //   markerPos = new THREE.Vector3();
-        //   marker1.getWorldPosition(markerPos);
 
-        //   this.tBoxPos = markerPos.add(3, 0, 0);
-        //   console.log("Marker Pos" + markerPos);
-        //   console.log("Text Display Pos" + this.tBoxPos);
 
-        // }
+        },
+
+        tick: (function () {
+          var cameraWPos = new THREE.Vector3();
+
+          return function () {
+            camera3D.getWorldPosition(cameraWPos);
+            console.log("Cam Pos x" + cameraWPos.x);
+            console.log("Cam Pos y" + cameraWPos.y);
+            console.log("Cam Pos z" + cameraWPos.z);
+          };
+        })()
+
  
       });
+
+      // AFRAME.registerComponent('rotation-reader', {
+      //   tick: function () {
+      //     // `this.el` is the element.
+      //     // `object3D` is the three.js object.
+
+      //     // `rotation` is a three.js Euler using radians. `quaternion` also available.
+      //     console.log(this.el.object3D.rotation);
+
+      //     // `position` is a three.js Vector3.
+      //     console.log(this.el.object3D.position);
+      //   }
+      // });
     </script>
 
 	</head>
@@ -142,84 +160,23 @@
         <img id="text_box" src="src/media/Text_Box.jpg">
         <img id="link_button" src="src/media/Button.jpg">
         <audio id="click-sound" crossorigin="anonymous" src="https://cdn.aframe.io/360-image-gallery-boilerplate/audio/click.ogg"></audio>
+        <a-asset-item id="animated-asset" src="https://raw.githubusercontent.com/nicolocarpignoli/nicolocarpignoli.github.io/master/ar-click-events/models/CesiumMan.gltf"></a-asset-item>
       </a-assets>
         
       <!-- Define markers -->
-      <a-marker id="marker1" type="pattern" url="https://raw.githack.com/valfishchang/valfishchang.github.io/main/src/marker/pattern-AMP171-001.patt"
-      emitevents="true" smooth="true" smooth-count="10" smooth-tolerance="0.5" smooth-threshold="1" registerevents>
-
-        <!-- Text Box and Content -->
-        <a-image src="#text_box" width="5.3" height="3" rotation="-90 0 0" opacity="1" >
-          <a-text id="details" value="AMP171-001" height="4" width="8" color="red" position="-1 0 0.8"></a-text>
-        </a-image> 
-        
-        <!-- Target Link Pages -->
-        <a-entity id="page" link="on: click; href: https://poly.pizza/m/66d-mKAgF17"></a-entity>
-        <!-- <a-box id="" onoff="on: click; url: 'https://poly.pizza/m/66d-mKAgF17'" position="0 1 5"></a-box> -->
-
-        <!-- Button links -->
-        <a-entity id="links" layout="type: line; margin: 1.5" rotation="-90 0 0" position="-1 0.5 4">
-          <a-entity template="src: #link" data-thumb="#link_button"></a-entity>
-        </a-entity>
-        
-      </a-marker>
-
-      <a-marker id="marker2" type="pattern" url="https://raw.githack.com/valfishchang/valfishchang.github.io/main/src/marker/pattern-AMP172-001.patt"
+      <a-marker emitevents="true" cursor="rayOrigin: mouse" id="marker2" type="pattern" url="https://raw.githack.com/valfishchang/valfishchang.github.io/main/src/marker/pattern-AMP172-001.patt"
       emitevents="true" smooth="true" smooth-count="10" smooth-tolerance="0.5" smooth-threshold="2" registerevents>
 
-        
-        <!-- <a-image src="#text_box" width="5.3" height="3" rotation="-90 0 0" opacity="1" >
-          <a-text id="details" value="AMP172-001" height="4" width="8" color="red" position="-1 0 0.8"></a-text>
-        </a-image>  -->
-        
+
       </a-marker>
 
-      <a-marker id="marker3" type="pattern" url="https://raw.githack.com/valfishchang/valfishchang.github.io/main/src/marker/pattern-SPC111-001.patt"
-      emitevents="true" smooth="true" smooth-count="10" smooth-tolerance="0.5" smooth-threshold="2" registerevents>
-
-        
-        <a-image src="#text_box" width="5.3" height="3" rotation="-90 0 0" opacity="1" >
-          <a-text id="details" value="SPC111-001" height="4" width="8" color="blue" position="-1 0 0.8"></a-text>
-        </a-image> 
-        
-      </a-marker>
-
-      <a-marker id="marker4" type="pattern" url="https://raw.githack.com/valfishchang/valfishchang.github.io/main/src/marker/pattern-GPC111-001.patt"
-      emitevents="true" smooth="true" smooth-count="10" smooth-tolerance="0.5" smooth-threshold="2" registerevents>
-
-        
-        <a-image src="#text_box" width="5.3" height="3" rotation="-90 0 0" opacity="1" >
-          <a-text id="details" value="GPC111-001" height="4" width="8" color="blue" position="-1 0 0.8"></a-text>
-        </a-image> 
-        
-      </a-marker>  
-
-      <a-marker id="marker5" type="pattern" url="https://raw.githack.com/valfishchang/valfishchang.github.io/main/src/marker/pattern-VMON121-001.patt"
-      emitevents="true" smooth="true" smooth-count="10" smooth-tolerance="0.5" smooth-threshold="2" registerevents>
-
-        
-        <a-image src="#text_box" width="5.3" height="3" rotation="-90 0 0" opacity="1" >
-          <a-text id="details" value="VMON121-001" height="4" width="8" color="green" position="-1 0 0.8"></a-text>
-        </a-image> 
-        
-      </a-marker>
-
-      <a-marker id="marker6" type="pattern" url="https://raw.githack.com/valfishchang/valfishchang.github.io/main/src/marker/pattern-VSW121-001.patt"
-      emitevents="true" smooth="true" smooth-count="10" smooth-tolerance="0.5" smooth-threshold="2" registerevents>
-
-        
-        <a-image src="#text_box" width="5.3" height="3" rotation="-90 0 0" opacity="1" >
-          <a-text id="details" value="VSW121-001" height="4" width="8" color="green" position="-1 0 0.8"></a-text>
-        </a-image> 
-        
-      </a-marker>
 
 
       <!-- Debug -->
       <!-- <a-box color="tomato" depth="2" height="4" width="0.5"></a-box> -->
 
       <!-- Camera & Cursor -->
-      <a-entity camera>
+      <a-entity id="camera" camera look-controls>
         <!-- <a-box color="tomato" depth="2" height="4" width="0.5" position="-1 0 -5"></a-box> -->
         <a-cursor
           id="cursor"
