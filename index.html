@@ -1,4 +1,5 @@
 <!DOCTYPE HTML>
+<!-- 07222024 test copy --> 
 <html>
 	<head>
 		<meta charset="UTF-8">
@@ -10,24 +11,17 @@
     <script src="https://unpkg.com/aframe-layout-component@5.3.0/dist/aframe-layout-component.min.js"></script>
     <script src="https://unpkg.com/aframe-template-component@3.2.1/dist/aframe-template-component.min.js"></script>
     <script src="https://unpkg.com/aframe-proxy-event-component@2.1.0/dist/aframe-proxy-event-component.min.js"></script>
-    <script src="onoff.js"></script>
-
-    <!-- Button link template to be reused. -->
-    <script id="link" type="text/html">
-      <a-entity class="link"
-        geometry="primitive: plane; height: 1; width: 2"
-        material="shader: flat; src: ${thumb}"
-        event-set__mouseenter="scale: 1.2 1.2 1"
-        event-set__mouseleave="scale: 1 1 1"
-        event-set__click="_target: #page; _delay: 300"
-        proxy-event="event: click; to: #page"
-        sound="on: click; src: #click-sound"></a-entity>
-    </script>  
 
     <!-- Register an aframe component that allows reacting to marker events -->
     <script>
-      let markerWPos = 0, cameraWPos = 0;
-      let camera3D;
+      // references to A-Box component spawned by Marker
+      let refCube, refCube3D;
+      // references to A-Box component spawned by user
+      let altCube, altCube3D;
+      // world position of refCube3D (updated in Tick)
+      let pos = new THREE.Vector3();
+      let rot = new THREE.Quaternion();
+      var Boxes = [];
 
       window.addEventListener('camera-init', (data) => {
           console.log('camera-init', data);
@@ -40,114 +34,62 @@
       AFRAME.registerComponent('registerevents', {
         init: function () {
           const sceneEl = document.querySelector('a-scene');
-          camera3D = document.querySelector('#camera').object3D;
           var marker = this.el;
-          var Boxes = [];
           
+          //---------- MARKER FOUND ----------
           marker.addEventListener('markerFound', function() {
             var markerId = marker.id;
             console.log('markerFound', markerId);
 
-            // Validate Box instances
-            if (!Boxes.includes(markerId)) {
+            // Update and get ref cube position
+            refCube = document.querySelector('#bluCube');
+            refCube3D = refCube.object3D;
+            refCube.setAttribute('color','yellow');
+            refCube3D.getWorldPosition(pos);
+            refCube3D.getWorldQuaternion(rot);
 
-              // Get Marker World Position through marker3D
-              var tBoxPos;
-              var marker3D = marker.object3D;
-              markerWPos = new THREE.Vector3();
-              marker3D.getWorldPosition(markerWPos);
-              markerWPos.round();
-              console.log("Marker W Pos X " + markerWPos.x);
-              console.log("Marker W Pos Y " + markerWPos.y);
-              console.log("Marker W Pos Z " + markerWPos.z);
-
-              // Create and display text box + text
-              var tBox = document.createElement('a-image');
-              sceneEl.appendChild(tBox);
-              tBox.id = 'TestImage';
-              tBox.setAttribute('src', '#text_box');
-              tBox.setAttribute('width', 5.3);
-              tBox.setAttribute('height', 3);
-              var tBoxObject3D = document.querySelector('#TestImage').object3D;
-              tBoxObject3D.position.set(markerWPos.x, markerWPos.y, markerWPos.z);
-              console.log(tBoxObject3D);
-
-              var displayT = document.createElement('a-text');
-              tBox.appendChild(displayT);
-              displayT.id = "DisplayText";
-              displayT.setAttribute('value', markerWPos.x);
-              displayT.setAttribute('color','blue');
-              var tDispObject3D = document.querySelector('#DisplayText').object3D;
-              tDispObject3D.position.set(-0.5, 0.5, 2);
-              // console.log(tDispObject3D);
-
-              // Read current cam position
-              // cameraWPos = new THREE.Vector3();
-              // camera3D.getWorldPosition(cameraWPos);
-              // cameraWPos.round();
-              
-              // Add marker ID to Box instances
-              Boxes.push(markerId);
-
-            } else {
-              console.log("instance not duplicated");
-              // Get camera-marker position differences
-              // var newCameraWPos = new THREE.Vector3();
-              // camera3D.getWorldPosition(newCameraWPos);
-              // newCameraWPos.round();
-              // console.log("Cam-Marker Dist " + cameraWPos.distanceTo(markerWPos));
-              // console.log("New Cam-Marker Dist " + newCameraWPos.distanceTo(markerWPos));
-              // if (cameraWPos.distanceTo(markerWPos) != newCameraWPos.distanceTo(markerWPos)) {
-              //   console.log("Cam-Marker Dist " + cameraWPos.distanceTo(markerWPos));
-              //   console.log("New Cam-Marker Dist " + newCameraWPos.distanceTo(markerWPos));
-              //   // console.log("Cam-Marker X Diff " + (newCameraWPos.x - markerWPos.x));
-              //   // console.log("Cam-Marker Y Diff " + (newCameraWPos.y - markerWPos.y));
-              //   // console.log("Cam-Marker Z Diff " + (newCameraWPos.z - markerWPos.z));
-
-              // }
-
-
-
-            }
-
-                          
+            if (Boxes.includes(markerId)) {
+              altCube3D.visible = false;
+            }            
           });
 
+          //---------- MARKER LOST ----------
           marker.addEventListener('markerLost', function() {
             var markerId = marker.id;
             console.log('markerLost', markerId);
             
+            // spawn alt cube
+            if (!Boxes.includes(markerId)) {
+              altCube = document.createElement('a-box');
+              sceneEl.appendChild(altCube);
+              altCube.id = '2ndCube';
+              altCube.setAttribute('color','blue');
+              altCube.setAttribute('scale','1 1 1');
+              altCube3D = altCube.object3D;
+              console.log(pos.x, pos.y, pos.z);
+
+              // Add marker ID to Box instances
+              Boxes.push(markerId);              
+            } else {
+              altCube3D.visible = true;
+            }
+            
           });
-
-
         },
 
-        tick: (function () {
-          var cameraWPos = new THREE.Vector3();
-
-          return function () {
-            camera3D.getWorldPosition(cameraWPos);
-            console.log("Cam Pos x" + cameraWPos.x);
-            console.log("Cam Pos y" + cameraWPos.y);
-            console.log("Cam Pos z" + cameraWPos.z);
-          };
-        })()
-
- 
+        tick: function (time, timeDelta) {
+          // Get world position and quaternion of the refCube if available
+          if (refCube3D != null) {
+            refCube3D.getWorldPosition(pos);
+            refCube3D.getWorldQuaternion(rot);
+          }
+          // Update altCube position and rotation
+          if (altCube3D != null) {
+            altCube3D.position.set(pos.x, pos.y, pos.z);
+            altCube3D.setRotationFromQuaternion(rot);
+          }
+        }
       });
-
-      // AFRAME.registerComponent('rotation-reader', {
-      //   tick: function () {
-      //     // `this.el` is the element.
-      //     // `object3D` is the three.js object.
-
-      //     // `rotation` is a three.js Euler using radians. `quaternion` also available.
-      //     console.log(this.el.object3D.rotation);
-
-      //     // `position` is a three.js Vector3.
-      //     console.log(this.el.object3D.position);
-      //   }
-      // });
     </script>
 
 	</head>
@@ -159,36 +101,23 @@
       <a-assets>
         <img id="text_box" src="src/media/Text_Box.jpg">
         <img id="link_button" src="src/media/Button.jpg">
-        <audio id="click-sound" crossorigin="anonymous" src="https://cdn.aframe.io/360-image-gallery-boilerplate/audio/click.ogg"></audio>
         <a-asset-item id="animated-asset" src="https://raw.githubusercontent.com/nicolocarpignoli/nicolocarpignoli.github.io/master/ar-click-events/models/CesiumMan.gltf"></a-asset-item>
       </a-assets>
-        
-      <!-- Define markers -->
-      <a-marker emitevents="true" cursor="rayOrigin: mouse" id="marker2" type="pattern" url="https://raw.githack.com/valfishchang/valfishchang.github.io/main/src/marker/pattern-AMP172-001.patt"
-      emitevents="true" smooth="true" smooth-count="10" smooth-tolerance="0.5" smooth-threshold="2" registerevents>
 
+      <!-- Define markers -->
+      <a-marker emitevents="true" id="marker2" type="pattern" url="https://raw.githack.com/valfishchang/valfishchang.github.io/main/src/marker/pattern-AMP172-001.patt"
+      emitevents="true" smooth="true" smooth-count="10" smooth-tolerance="0.01" smooth-threshold="5" registerevents>
+      
+        <a-box id="bluCube" color="blue" position="0 0 0" rotation="0 0 0" scale="1 1 1">
+        </a-box>
 
       </a-marker>
 
-
-
-      <!-- Debug -->
-      <!-- <a-box color="tomato" depth="2" height="4" width="0.5"></a-box> -->
-
       <!-- Camera & Cursor -->
-      <a-entity id="camera" camera look-controls>
-        <!-- <a-box color="tomato" depth="2" height="4" width="0.5" position="-1 0 -5"></a-box> -->
-        <a-cursor
-          id="cursor"
-          animation__click="property: scale; startEvents: click; from: 0.1 0.1 0.1; to: 1 1 1; dur: 150"
-          animation__fusing="property: fusing; startEvents: fusing; from: 1 1 1; to: 0.1 0.1 0.1; dur: 1500"
-          event-set__mouseenter="_event: mouseenter; color: springgreen"
-          event-set__mouseleave="_event: mouseleave; color: black"
-          raycaster="objects: .link">
-        </a-cursor>
-
-         
+      <a-entity camera id="cam">
+        <a-cursor color="#FAFAFA"></a-cursor>
       </a-entity>
+      
 		</a-scene>
 
 	</body>
